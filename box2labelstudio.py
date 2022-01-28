@@ -48,67 +48,68 @@ None, the conversion result is written in output_path
 """
 def convert_box_to_labelstudio(input_,json_id, annotations_id, label_box_img_name, label_box_img_path, project_number, task_number, output_path):
     img, boxes = tesseract_get_bounding_boxes(input_)
-    h, w, c = img.shape
+    og_height, og_width, c = img.shape
     boxes_list = boxes.split('\n')
     boxes_list = [el.split() for el in boxes_list]
     boxes_list
     output = [{"id":json_id,"annotations":[{"id":annotations_id,"completed_by":1,"result":[],"was_cancelled":False,"ground_truth":False,"prediction":{}, "task":task_number, "parent_prediction":None, "parent_annotation":None}], "file_upload":label_box_img_name, "drafts":[],"predictions":[],"data":{"ocr":label_box_img_path},"meta":{},"project":project_number}]
     empty_transcriptions = 0
     for box_i in range(len(boxes_list)):
-    try:
-        label, xmin, ymin, xmax, ymax, rot = boxes_list[box_i]
-        xmin = float(xmin)
-        ymin = float(ymin)
-        xmax = float(xmax)
-        ymax = float(ymax)
-        rot = float(rot)
-        x_perc, y_perc, width_perc, height_perc = convert_to_ls(xmin, ymin, xmax-xmin+1, ymax-ymin+1, og_width, og_height)
-          
-        transcript_dict = {"original_width":og_width,
-                    "original_height":og_height,
-                    "image_rotation":0,
-                    "value":{                   
-                       "x":x_perc,
-                         "y":y_perc,
-                         "width":width_perc,
-                         "height":height_perc,
-                         "rotation":rot,
-                        "text": [
-                        label
-                          ]},                 
-                    "id":str(box_i),
-                    "from_name": "transcription",
-                    "to_name": "image",
-                    "type": "textarea",
-                    "origin":"manual"}
-        bbox_dict = {
-            "original_width":og_width,
-            "original_height":og_height,
-            "image_rotation":0,
-            "id":str(box_i),
-            "from_name": "bbox",
-            "to_name": "image",
-            "type": "rectangle",
-            "value": {
-                 "x":x_perc,
-                 "y":y_perc,
-                 "width":width_perc,
-                 "height":height_perc,
-                 "rotation":rot
-            }
-            ,"origin":"manual"
-          }
-        
-        output[0]["annotations"][0]["result"].append(bbox_dict)
-        output[0]["annotations"][0]["result"].append(transcript_dict)
-    except:
-        empty_transcriptions = empty_transcriptions + 1
+        try:
+            label, xmin, ymin, xmax, ymax, rot = boxes_list[box_i]
+            xmin = float(xmin)
+            ymin = float(ymin)
+            xmax = float(xmax)
+            ymax = float(ymax)
+            rot = float(rot)
+            x_perc, y_perc, width_perc, height_perc = convert_to_ls(xmin, ymin, xmax-xmin+1, ymax-ymin+1, og_width, og_height)
+            print('here')
+
+            transcript_dict = {"original_width":og_width,
+                        "original_height":og_height,
+                        "image_rotation":0,
+                        "value":{                   
+                           "x":x_perc,
+                             "y":y_perc,
+                             "width":width_perc,
+                             "height":height_perc,
+                             "rotation":rot,
+                            "text": [
+                            label
+                              ]},                 
+                        "id":str(box_i),
+                        "from_name": "transcription",
+                        "to_name": "image",
+                        "type": "textarea",
+                        "origin":"manual"}
+            bbox_dict = {
+                "original_width":og_width,
+                "original_height":og_height,
+                "image_rotation":0,
+                "id":str(box_i),
+                "from_name": "bbox",
+                "to_name": "image",
+                "type": "rectangle",
+                "value": {
+                     "x":x_perc,
+                     "y":y_perc,
+                     "width":width_perc,
+                     "height":height_perc,
+                     "rotation":rot
+                }
+                ,"origin":"manual"
+              }
+
+            output[0]["annotations"][0]["result"].append(bbox_dict)
+            output[0]["annotations"][0]["result"].append(transcript_dict)
+        except:
+            empty_transcriptions = empty_transcriptions + 1
     with open(output_path, 'w') as f:
         json.dump(output, f)
     print('Done with the conversion! Number of empty transcriptions in box file: {}'.format(empty_transcriptions))    
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert a PDF file into a folder with images such that each image is a PDF page')
+    parser = argparse.ArgumentParser(description='Convert a Tesseract box file to a Label Studio json file')
     parser.add_argument('-i','--input', help='path to the image file', required=True)
     parser.add_argument('-f','--filename', help='the name of the image on label studio', required=True)
     parser.add_argument('-a','--filepath', help='the path of the image on label studio', required=True)

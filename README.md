@@ -107,9 +107,17 @@ where <id> is the identifier of the json file (by convention an integer), <annot
 
 `python3 box2labelstudio.py -i <input> -f <filename> -a <filepath> -n <jsonid> -s <annotationsid> -p <projnum> -t <tasknum> -o <output>`
 
-such that `<input>` is the path to the box file,  `<filename>` is the name of the image on Label Studio, `<filepath>` is the path of the image on Label Studio, `<jsonid>` is the identifier to give to the json file, `<annotations_id>` is the identifier of the annotations to be written, `<projnum>` is the number of the project as indicated on Label Studio, `<tasknum>` is the task number as indicated on Label Studio and `<output>` is the path to the json file to be created.
+such that `<input>` is the path to the image,  `<filename>` is the name of the image on Label Studio, `<filepath>` is the path of the image on Label Studio, `<jsonid>` is the identifier to give to the json file, `<annotations_id>` is the identifier of the annotations to be written, `<projnum>` is the number of the project as indicated on Label Studio, `<tasknum>` is the task number as indicated on Label Studio and `<output>` is the path to the json file to be created.
 
 It should be noted that even when Label Studio accepted this format, it lagged considerably.
+
+### Turning [Label Studio](https://labelstud.io/) annotations into Tesseract box files
+
+In order to convert a Label Studio json file to a Tesseract box file, `labelstudio2box.py` is provided. It can be used as follows - 
+
+`python3 labelstudio2box.py -i <input> -o <output>`
+
+such that <input> is the input json file and <output> is the output box file.
 
 ## Suggestions for future work
 
