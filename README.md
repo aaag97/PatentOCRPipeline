@@ -157,3 +157,5 @@ such that <input> is the input json file and <output> is the output box file.
 * kraken: It seems to work well with Lace and in particular with historical documents, but its documentation is unclear and my initial results with it have not been promising.
 
 * Tesseract: It is the most widely used and it is well documented. However, it has trouble with noisy documents.
+   
+Promising article to check out: https://source.opennews.org/articles/so-many-ocr-options/.
