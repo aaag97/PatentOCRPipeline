@@ -36,6 +36,9 @@ def tesseract_get_bounding_boxes(input_):
 function to convert tesseract's bounding box output to a json output which is compatible with label studio (given the buggy nature of label studio, this function might need some work before usage)
 Args:
 input_ - path to image
+json_id - id to use for the json file
+annotations_id - the id to use for the annotations
+label_box_img_path - image path as it appears on label studio
 label_box_img_name - image name as it appears on label studio
 project_number - label studio project number
 task_number - the task number on label studio
@@ -43,13 +46,13 @@ output_path - output to output json file
 Returns:
 None, the conversion result is written in output_path
 """
-def convert_box_to_labelstudio(input_, label_box_img_name, project_number, task_number, output_path):
+def convert_box_to_labelstudio(input_,json_id, annotations_id, label_box_img_name, label_box_img_path, project_number, task_number, output_path):
     img, boxes = tesseract_get_bounding_boxes(input_)
     h, w, c = img.shape
     boxes_list = boxes.split('\n')
     boxes_list = [el.split() for el in boxes_list]
     boxes_list
-    output = [{"id":1,"annotations":[{"id":10,"completed_by":1,"result":[],"was_cancelled":False,"prediction":{}, "task":task_number, "parent_prediction":None, "parent_annotation":None}], "drafts":[],"predictions":[],"data":{"ocr":label_box_img_name},"meta":{},"project":project_number}]
+    output = [{"id":json_id,"annotations":[{"id":annotations_id,"completed_by":1,"result":[],"was_cancelled":False,"ground_truth":False,"prediction":{}, "task":task_number, "parent_prediction":None, "parent_annotation":None}], "file_upload":label_box_img_name, "drafts":[],"predictions":[],"data":{"ocr":label_box_img_path},"meta":{},"project":project_number}]
     empty_transcriptions = 0
     for box_i in range(len(boxes_list)):
     try:
@@ -107,17 +110,23 @@ def convert_box_to_labelstudio(input_, label_box_img_name, project_number, task_
 def main():
     parser = argparse.ArgumentParser(description='Convert a PDF file into a folder with images such that each image is a PDF page')
     parser.add_argument('-i','--input', help='path to the image file', required=True)
-    parser.add_argument('-l','--filename', help='the name of the image on label studio', required=True)
+    parser.add_argument('-f','--filename', help='the name of the image on label studio', required=True)
+    parser.add_argument('-a','--filepath', help='the path of the image on label studio', required=True)
+    parser.add_argument('-n','--jsonid', help='the id of the json file', required=True)
+    parser.add_argument('-s','--annotationsid', help='the id of the annotations', required=True)
     parser.add_argument('-p','--projnum', help='the project number on label studio', required=True)
-    parser.add_argument('-p','--tasknum', help='the task number on label studio', required=True)
+    parser.add_argument('-t','--tasknum', help='the task number on label studio', required=True)
     parser.add_argument('-o','--output', help='path to the json file to be created', required=True)
     args = vars(parser.parse_args())
     input_ = args['input']
     label_box_img_name = args['filename']
+    label_box_img_path = args['filepath']
+    json_id = args['jsonid']
+    annotations_id = args['annotationsid']
     project_number = args['projnum']
     task_number = args['tasknum']
     output_path = args['output']
-    convert_box_to_labelstudio(input_, label_box_img_name, project_number, task_number, output_path)
+    convert_box_to_labelstudio(input_,json_id, annotations_id, label_box_img_name, label_box_img_path, project_number, task_number, output_path)
 
 if __name__ == "__main__":
     main()
