@@ -33,7 +33,8 @@ The format that is given by Tesseract is a box file. It is a text file composed 
 According to documentation, the format that is accepted by the standard OCR configuration of Label Studio is a json file that has the following structure
 
 ```json
-   {"data":{
+{
+   "data":{
       "ocr":<name_of_file>
    },
    "predictions":[
@@ -50,54 +51,73 @@ such that <name_of_file> is the name of the image (that is on label studio) corr
 
 ```json
 {
-               "original_width":<og_width>,
-               "original_height":<og_height>,
-               "image_rotation":<og_rotation>,
-               "value":{
-                  "x":<xmin>,
-                  "y":<ymin>,
-                  "width":<width>,
-                  "height":<height>,
-                  "rotation":<rotation>
-               },
-               "id":<id>,
-               "from_name":"bbox",
-               "to_name":"image",
-               "type":"rectangle"
-            },
+   "original_width":<og_width>,
+   "original_height":<og_height>,
+   "image_rotation":<og_rotation>,
+   "value":{
+      "x":<xmin>,
+      "y":<ymin>,
+      "width":<width>,
+      "height":<height>,
+      "rotation":<rotation>
+   },
+   "id":<id>,
+   "from_name":"bbox",
+   "to_name":"image",
+   "type":"rectangle"
+}
 ```
 and 
 
 ```json
-
-             {
-               "original_width":<og_width>,
-               "original_height":<og_height>,
-               "image_rotation":<og_rotation>,
-               "value":{
-                  "x":<xmin>,
-                  "y":<ymin>,
-                  "width":<width>,
-                  "height":<height>,
-                  "rotation":<rotation>,
-                  "text":[
-                     <text>
-                  ]
-               },
-               "id":<id>,
-               "from_name":"transcription",
-               "to_name":"image",
-               "type":"textarea",
-               "score":<score>
-            },
+{
+   "original_width":<og_width>,
+   "original_height":<og_height>,
+   "image_rotation":<og_rotation>,
+   "value":{
+      "x":<xmin>,
+      "y":<ymin>,
+      "width":<width>,
+      "height":<height>,
+      "rotation":<rotation>,
+      "text":[
+         <text>
+      ]
+   },
+   "id":<id>,
+   "from_name":"transcription",
+   "to_name":"image",
+   "type":"textarea",
+   "score":<score>
+}
 ```
+
 where <og_width> is the width of the whole image, <og_height> is the height of the whole image, <og_rotation> is the rotation of the whole image, <xmin> is the minimum x coordinate of the bounding box, <ymin> is the minimum y coordinate of the bounding box, <width> is the width of the bounding box, <height> is the height of the bounding box (please note that <xmin>, <ymin>, <width> and <height> are in percentage of the size of the whole image; a conversion function is available [here](https://labelstud.io/guide/predictions.html)), <rotation> is the rotation of the recognized character, <text> is the recognized text, <id> is the identifier of the annotation (by convention should be a string) and <score> is the prediction score given to the annotation. Please note that the common parameters have to match for each pair of entries (given that each pair corresponds to one annotation).
 
 Given that feeding Label Studio pre-annotations in this format (which is the one specified in the documentation) did not work, reverse engineering was used to inspect which format should be used for Label Studio. It is presented as follows - 
 
 ```json
-[{"id":<id>,"annotations":[{"id":<annotations_id>,"completed_by":1,"result":[],"was_cancelled":false,"ground_truth":false,"prediction":{},"task":<task_number>,"parent_prediction":null,"parent_annotation":null}],"file_upload":<filename>,"drafts":[],"predictions":[],"data":{"ocr":<filepath>},"meta":{},"project":<project_number>}]
+[{
+   "id":<id>,
+   "annotations":
+      [{"id":<annotations_id>,
+      "completed_by":1,
+      "result":[],
+      "was_cancelled":false,
+      "ground_truth":false,
+      "prediction":{},
+      "task":<task_number>,
+      "parent_prediction":null,
+      "parent_annotation":null}],
+   "file_upload":<filename>,
+   "drafts":[],
+   "predictions":[],
+   "data":
+      {"ocr":<filepath>},
+   "meta":{},
+   "project":<project_number>}]
 ```
+   
 where <id> is the identifier of the json file (by convention an integer), <annotations_id> is the identifier for the annotations (by convention an integer), <filename> is the filename of the image as it is visible on Label Studio, <task_number> is the number of the task as indicated by Label Studio, <filepath> is the whole path to the image (including the image filename) as visible on Label Studio, <project_number> is the number of the project as given by Label Studio and `results` should contain the same two entries per annotation as indicated above, with the following exceptions -
 
 * an additional field `origin` the value of which should be `manual` should be added.
