@@ -5,9 +5,14 @@ import cv2
 import json
 
 """
-function to convert the coordinates of bounding boxes from label studio units (percentages) to box file units (pixels
+function to convert the coordinates of bounding boxes from label studio units (percentages) to box file units (pixels) [taken from https://labelstud.io/guide/predictions.html]
 Args:
 result - a result entry from a label studio annotations json file
+Returns:
+xmin - the minimum x coordinate in pixels
+ymin - the minimum y coordinate in pixels
+width - the width in pixels
+height - the height in pixels
 """
 def convert_from_ls(result):
     if 'original_width' not in result or 'original_height' not in result:

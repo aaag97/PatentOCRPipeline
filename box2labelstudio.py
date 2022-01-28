@@ -6,7 +6,7 @@ import pytesseract
 import json
 
 """
-function to convert the coordinates of bounding boxes to label studio units (percentages)
+function to convert the coordinates of bounding boxes to label studio units (percentages) [taken from https://labelstud.io/guide/predictions.html]
 Args:
 x - the xmin coordinate in the number of pixels unit
 y - the ymin coordinate in the number of pixels unit
